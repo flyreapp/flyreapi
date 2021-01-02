@@ -1,0 +1,256 @@
+syntax = "proto3";
+
+package flyre.api;
+
+// Manages missions.
+service Missions {
+  // Lists missions.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc ListMissions (ListMissionsRequest) returns (ListMissionsResponse) {}
+
+  // Creates a mission.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc CreateMission (CreateMissionRequest) returns (Mission) {}
+
+  // Gets a mission.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc GetMission(GetMissionRequest) returns (Mission) {}
+}
+
+// Request message for `Missions.ListMissions`.
+message ListMissionsRequest {
+  // Parent resource name, ex: `users/{uuid}`.
+  string parent = 1;
+}
+
+// Response message for `Missions.ListMissions`.
+message ListMissionsResponse {
+  // The requested resources.
+  repeated Mission missions = 1;
+}
+
+// Request message for `Missions.CreateMission`.
+message CreateMissionRequest {
+  // Parent resource name, ex: `users/{uuid}`.
+  string parent = 1;
+  // The resource to create.
+  Mission mission = 2;
+}
+
+// Request message for `Missions.GetMission`.
+message GetMissionRequest {
+  // Name of the resource requested, ex: `users/{uuid}/missions/{uuid}`.
+  string name = 1;
+}
+
+// Manages positions.
+service Positions {
+  // Updates a position.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc UpdatePosition (UpdatePositionRequest) returns (Position) {}
+}
+
+// Request message for `Positions.UpdatePosition`.
+message UpdatePositionRequest {
+  // The resource to update.
+  Position position = 1;
+}
+
+// Manages tokens.
+service Tokens {
+  // Creates a token.
+  // Required headers:
+  // * `api-key`
+  rpc CreateToken (CreateTokenRequest) returns (Token) {}
+}
+
+// Request message for `Tokens.CreateToken`.
+message CreateTokenRequest {
+  // Parent resource name, ex: `users/{uuid}`.
+  string parent = 1;
+}
+
+// Manages users.
+service Users {
+  // Gets a batch of users.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc BatchGetUsers (BatchGetUsersRequest) returns (BatchGetUsersResponse) {}
+
+  // Gets a user.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc GetUser (GetUserRequest) returns (User) {}
+
+  // Creates a user.
+  // Required headers:
+  // * `api-key`
+  rpc CreateUser (CreateUserRequest) returns (User) {}
+}
+
+// Request message for `Users.BatchGetUsers`.
+message BatchGetUsersRequest {
+  // Names of the resources requested, ex: `users/{uuid}`.
+  repeated string names = 1;
+}
+
+// Response message for `Users.BatchGetUsers`.
+message BatchGetUsersResponse {
+  // The requested resources.
+  repeated User users = 1;
+}
+
+// Request message for `Users.GetUser`.
+message GetUserRequest {
+  // Name of the resource requested, ex: `users/{uuid}`.
+  string name = 1;
+}
+
+// Request message for `Users.CreateUser`.
+message CreateUserRequest {
+  // The resource to create.
+  User user = 1;
+}
+
+// Manages visibilities.
+service Visibilities {
+  // Creates a visibility.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc CreateVisibility (CreateVisibilityRequest) returns (Visibility) {}
+
+  // Deletes a visibility.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc DeleteVisibility (DeleteVisibilityRequest) returns (Empty) {}
+}
+
+// Request message for `Visibilities.CreateVisibility`.
+message CreateVisibilityRequest {
+  // Parent resource name, ex: `users/{uuid}`.
+  string parent = 1;
+  // The resource to create.
+  Visibility visibility = 2;
+}
+
+// Request message for `Visibilities.DeleteVisibility`.
+message DeleteVisibilityRequest {
+  // The name of the resource to be deleted, ex: `users/{uuid}/visibilities/{uuid}`.
+  string name = 1;
+}
+
+// Manages waypoints.
+service Waypoints {
+  // List waypoints.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc ListWaypoints (ListWaypointsRequest) returns (ListWaypointsResponse) {}
+
+  // Updates a waypoint.
+  // Required headers:
+  // * `api-key` OR `token`
+  rpc UpdateWaypoint (UpdateWaypointRequest) returns (Waypoint) {}
+}
+
+// Request message for `Waypoints.ListWaypoints`.
+message ListWaypointsRequest {
+  // Parent resource name, ex: `users/{uuid}`.
+  string parent = 1;
+}
+
+// Response message for `Waypoints.ListWaypoints`.
+message ListWaypointsResponse {
+  // The requested resources.
+  repeated Waypoint waypoints = 1;
+}
+
+// Request message for `Waypoints.UpdateWaypoint`.
+message UpdateWaypointRequest {
+  // The resource to update.
+  Waypoint waypoint = 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// An empty message.
+message Empty {
+}
+
+// A mission with waypoints.
+message Mission {
+  // Resource name, ex: `users/{uuid}/missions/{uuid}`.
+  string name = 1;
+  // ISO 8601 timestamp.
+  string created_at = 2;
+  // Array of waypoints.
+  repeated Waypoint waypoints = 3;
+  // Completion flag.
+  bool complete = 4;
+}
+
+// A geographic position.
+message Position {
+  // Resource name, ex: `users/{uuid}/position`.
+  string name = 1;
+  // Longitude.
+  double longitude = 2;
+  // Latitude.
+  double latitude = 3;
+  // Altitude.
+  float altitude = 4;
+}
+
+// A token message.
+message Token {
+  // Token value.
+  string value = 1;
+}
+
+// An api user.
+message User {
+  // Resource name, ex: `users/{uuid}`.
+  string name = 1;
+  // ISO 8601 timestamp.
+  string created_at = 2;
+  // Current position of the user.
+  Position position = 3;
+  // A set representing two-way visibility.
+  message VisibilitySet {
+    // Visibility belonging to the token bearer where viewer is the user being serialized.
+    Visibility visibility = 1;
+    // Visibility belonging to the user being serialized where viewer is the token bearer.
+    Visibility inverse = 2;
+  }
+  // Visibility set between client user and this user.
+  VisibilitySet visibility_set = 4;
+}
+
+// A visibility between two users.
+message Visibility {
+  // Resource name, ex: `users/{uuid}/visibilities/{uuid}`.
+  string name = 1;
+  // Resource name of the viewer, ex: `users/{uuid}`.
+  string viewer = 2;
+}
+
+// A mission waypoint.
+message Waypoint {
+  // Resource name, ex: `users/{uuid}/waypoints/{uuid}`.
+  string name = 1;
+  // Resource name of the user, ex: `users/{uuid}`.
+  string user = 2;
+  // Place in line, in the order of completion.
+  int32 place = 3;
+  // ISO 8601 timestamp.
+  string created_at = 4;
+  // Position of the waypoint, at the time of creation, taken from the user.
+  Position position = 5;
+  // Completion flag.
+  bool complete = 6;
+  // Resource name of the currently assigned drone, ex: `drones/{uuid}`.
+  string drone = 7;
+}
