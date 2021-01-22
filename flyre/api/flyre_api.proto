@@ -24,6 +24,8 @@ service Missions {
 message ListMissionsRequest {
   // Parent resource name, ex: `users/{uuid}`.
   string parent = 1;
+  // Filter by state.
+  repeated string states = 2;
 }
 
 // Response message for `Missions.ListMissions`.
@@ -160,6 +162,8 @@ service Waypoints {
 message ListWaypointsRequest {
   // Parent resource name, ex: `users/{uuid}`.
   string parent = 1;
+  // Filter by state.
+  repeated string states = 2;
 }
 
 // Response message for `Waypoints.ListWaypoints`.
@@ -188,8 +192,8 @@ message Mission {
   string created_at = 2;
   // Array of waypoints.
   repeated Waypoint waypoints = 3;
-  // Completion flag.
-  bool complete = 4;
+  // State - pending, flying, or completed.
+  string state = 5;
 }
 
 // A geographic position.
@@ -249,8 +253,8 @@ message Waypoint {
   string created_at = 4;
   // Position of the waypoint, at the time of creation, taken from the user.
   Position position = 5;
-  // Completion flag.
-  bool complete = 6;
-  // Resource name of the currently assigned drone, ex: `drones/{uuid}`.
-  string drone = 7;
+  // State - pending, flying, waiting, or completed.
+  string state = 6;
+  // Resource name of the assigned system, ex: `systems/{uuid}`.
+  string system = 7;
 }
